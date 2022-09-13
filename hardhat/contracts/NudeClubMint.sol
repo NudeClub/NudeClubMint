@@ -14,25 +14,28 @@ contract NudeClubMint is ERC721Enumerable, Ownable {
 	*/
 	string _baseTokenURI;
 
-	//  _price is the price of one nudeclub pass 
+	//  The price of one NFT in the mint
 	uint256 public _price = 0.1 ether;
 
-
+	// Max number of passes we want to sell in this mint
 	uint256 public maxTokenIds = 1000;
+	// Number to keep track of how many are minted
 	uint256 public tokenIds;
-	bool public startMint;
+	// Flag to start the mint 
+	bool startMint = false;
 
 	/**
-	* @dev ERC721 constructor takes in a `name` and a `symbol` to the token collection.
-    *      We can change the name Taylor here for each creator
-    */
+	* * @dev ERC721 constructor takes in a `name` and a `symbol` to the token collection.
+	*     We can change <MODEL_NAME> here for each creator, later we can make a contract 
+	*	  factory for a more scalable solution
+	*/
 	constructor (string memory baseURI) ERC721("Nude Club <MODEL_NAME>", "NUDE") {
 		_baseTokenURI = baseURI;
 	}
 
 	/**
-	* @dev startPresale starts a presale for the whitelisted addresses
-	*/
+	 *  Function used to begin the mint that only the owner can call
+	 */
 	function startMintFunc() public onlyOwner {
 		startMint = true;
 	}
@@ -57,7 +60,6 @@ contract NudeClubMint is ERC721Enumerable, Ownable {
 		return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(tokenId), ".json")) : "";
 	}
 
-
 	/**
 	* @dev Allow a user to mint one NFT per wallet
 	*/
@@ -65,17 +67,16 @@ contract NudeClubMint is ERC721Enumerable, Ownable {
 		require(startMint, "Mint not active");
 		require(tokenIds < maxTokenIds, "All passes minted");
         // One pass per wallet - not sure if we want this 
-        require(IERC721(address(this)).balanceOf(msg.sender) == 0, "Only one mint allowed per wallet");
+		require(IERC721(address(this)).balanceOf(msg.sender) == 0, "Only one mint allowed per wallet");
 		require(msg.value >= _price, "Not enough eth sent");
 		tokenIds += 1;
 		_safeMint(msg.sender, tokenIds);
 	}
 
-
 	/**
 	* @dev withdraw eth to owner
-    */
-	function withdraw() public onlyOwner  {
+	*/
+	function withdraw() public 	  {
 		address _owner = owner();
 		uint256 amount = address(this).balance;
 		(bool sent, ) =  _owner.call{value: amount}("");
