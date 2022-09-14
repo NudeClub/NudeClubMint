@@ -76,7 +76,7 @@ contract NudeClubMint is ERC721Enumerable, Ownable {
 	/**
 	* @dev withdraw eth to owner
 	*/
-	function withdraw() public 	  {
+	function withdraw() public onlyOwner {
 		address _owner = owner();
 		uint256 amount = address(this).balance;
 		(bool sent, ) =  _owner.call{value: amount}("");

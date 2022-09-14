@@ -5,7 +5,6 @@ const provider = ethers.provider;
 
 // We're deploying a new contract and addresses in each test here
 // This is only to test the basic functionally so far
-// Plan to add dummy nfts on IPFS to correctly test in more detail
 
 describe("Nude Club creator pass minting contract", function () {
   it("User can mint NFT after mint started and number minted increments correctly", async function () {
@@ -15,7 +14,7 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
 
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("xxx");
+    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha");
 
     // Only owner can start the mint 
     await hardhatContract.startMintFunc();
@@ -42,7 +41,7 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
 
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("xxx");
+    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha");
 
     // Try and mint an NFT before the owner has started minting
     await expect (
@@ -64,7 +63,7 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
 
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("xxx");
+    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha");
     
     await hardhatContract.connect(owner).startMintFunc();
     
@@ -76,12 +75,12 @@ describe("Nude Club creator pass minting contract", function () {
 
   it("Ensure only owner can start the mint", async function () {
   
-      const [owner, addr1] = await ethers.getSigners();
-      
-      const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
-      
-      // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-      const hardhatContract = await NudeClubMint.deploy("xxx");
+    const [owner, addr1] = await ethers.getSigners();
+    
+    const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
+    
+    // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
+    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha");
       
     // Try to start mint as non-owner 
     await expect (
@@ -104,6 +103,34 @@ describe("Nude Club creator pass minting contract", function () {
 
     // Confirm one pass minted
     expect(await hardhatContract.tokenIds()).to.equal(1);
+
+  });
+
+  it("Ensure only owner can withdraw", async function () {
+  
+    const [owner, addr1] = await ethers.getSigners();
+    
+    const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
+    
+    // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
+    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha");
+      
+    // Start mint as owner 
+    await hardhatContract.connect(owner).startMintFunc() 
+
+    // Try and mint an NFT 
+    await hardhatContract.connect(owner).mintPass({ value: ethers.utils.parseEther("0.1") });
+
+    // Confirm one NFT minted
+    expect(await hardhatContract.tokenIds()).to.equal(1);
+
+    // Try to withdraw eth not as owner 
+    await expect (
+      hardhatContract.connect(addr1).withdraw() 
+    ).to.be.revertedWith("Ownable: caller is not the owner");
+
+    // Try to withdraw as owner (will throw fail if txn fails)
+    await hardhatContract.connect(owner).withdraw();
 
   });
 
