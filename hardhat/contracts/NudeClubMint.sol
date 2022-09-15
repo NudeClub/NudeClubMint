@@ -15,7 +15,7 @@ contract NudeClubMint is ERC721Enumerable, Ownable {
 	string _baseTokenURI;
 
 	//  The price of one NFT in the mint
-	uint256 public _price = 0.1 ether;
+	uint256 public NFT_price = 0.1 ether;
 
 	// Max number of passes we want to sell in this mint
 	uint256 public maxTokenIds = 1000;
@@ -61,20 +61,21 @@ contract NudeClubMint is ERC721Enumerable, Ownable {
 	}
 
 	/**
-	* @dev Allow a user to mint one NFT per wallet
+	* @dev Allow a user to mint one NFT per transaction
 	*/
 	function mintPass() public payable {
 		require(startMint, "Mint not active");
 		require(tokenIds < maxTokenIds, "All passes minted");
-        // One pass per wallet - not sure if we want this 
-		require(IERC721(address(this)).balanceOf(msg.sender) == 0, "Only one mint allowed per wallet");
-		require(msg.value >= _price, "Not enough eth sent");
+		// One pass per wallet - not sure if we want this so removed for now
+		//require(IERC721(address(this)).balanceOf(msg.sender) == 0, "Only one mint allowed per wallet");
+		require(msg.value >= NFT_price, "Not enough eth sent");
 		tokenIds += 1;
 		_safeMint(msg.sender, tokenIds);
 	}
 
 	/**
 	* @dev withdraw eth to owner
+	* 	   possible that we will not use this and send to multi sig wallet instead
 	*/
 	function withdraw() public onlyOwner {
 		address _owner = owner();

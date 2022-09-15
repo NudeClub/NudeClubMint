@@ -5,6 +5,7 @@ const provider = ethers.provider;
 
 // We're deploying a new contract and addresses in each test here
 // This is only to test the basic functionally so far
+// I've used dummy IPFS metadata here, we want to replace that with a real test set of 1000 creater passes 
 
 describe("Nude Club creator pass minting contract", function () {
   it("User can mint NFT after mint started and number minted increments correctly", async function () {
@@ -132,6 +133,86 @@ describe("Nude Club creator pass minting contract", function () {
     // Try to withdraw as owner (will throw fail if txn fails)
     await hardhatContract.connect(owner).withdraw();
 
+  });
+
+  it("Users can mint up to 1000 NFTs and no more", async function () {
+
+    const [owner, addr1] = await ethers.getSigners();
+
+    const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
+
+    // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
+    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha");
+
+    // Only owner can start the mint 
+    await hardhatContract.connect(owner).startMintFunc();
+
+    // Check max number of passes is 1000
+    expect(await hardhatContract.maxTokenIds()).to.equal(1000);
+
+    // Confirm no passes minted yet
+    expect(await hardhatContract.tokenIds()).to.equal(0);
+
+    // Loop through mint function 1000 times
+    for (let i = 0; i < 1000; i++) {
+      await hardhatContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
+    }
+
+    // Confirm 1000 passes minted
+    expect(await hardhatContract.tokenIds()).to.equal(1000);
+
+    // Try to mint one more which should throw a fail
+    await expect (
+      hardhatContract.connect(addr1).mintPass({value : ethers.utils.parseEther("0.1") })
+    ).to.be.revertedWith("All passes minted");
+
+    // Confirm still 1000 passes minted
+    expect(await hardhatContract.tokenIds()).to.equal(1000);
+
+  });
+
+  it("Ensure correct amount of eth is withdrawn after some passes are minted", async function () {
+
+    const [owner, addr1] = await ethers.getSigners();
+
+    const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
+
+    // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
+    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha");
+
+    // Only owner can start the mint 
+    await hardhatContract.connect(owner).startMintFunc();
+
+    // Confirm no passes minted yet
+    expect(await hardhatContract.tokenIds()).to.equal(0);
+
+    // Get balance of owner
+    const ownerBalance = ethers.BigNumber.from(await provider.getBalance(owner.address));
+
+    // Confirm bignumber converion works ok
+    expect(await provider.getBalance(owner.address)).to.equal(ownerBalance);
+
+    // Loop through mint function 100 times
+    for (let i = 0; i < 100; i++) {
+      await hardhatContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
+    }
+
+    // Confirm 100 passes minted
+    expect(await hardhatContract.tokenIds()).to.equal(100);
+
+    // Withdraw as owner and calculate gas cost
+    txResp = await hardhatContract.connect(owner).withdraw();
+    txReceipt = await txResp.wait();
+    withdrawGas = ethers.BigNumber.from(txReceipt.gasUsed.mul(txReceipt.effectiveGasPrice));
+
+    // Assign 10eth value to variable
+    // wei to eth conversion is 1wei * 10**18 = 1eth
+    const tenETH = ethers.BigNumber.from("10000000000000000000");
+    // Subtract gas cost from ETH withdrawn
+    const withdrawAmountMinusGastCost = tenETH.sub(withdrawGas);
+
+    // ETH in owner wallet should now equal the ETH withdrawn minus the gas cost
+    expect(await provider.getBalance(owner.address)).to.equal(ownerBalance.add(withdrawAmountMinusGastCost));
   });
 
 });
