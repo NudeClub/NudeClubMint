@@ -29,7 +29,7 @@ contract NudeClubMint is ERC721Enumerable, Ownable {
 	*     We can change <MODEL_NAME> here for each creator, later we can make a contract 
 	*	  factory for a more scalable solution
 	*/
-	constructor (string memory baseURI) ERC721("Nude Club <MODEL_NAME>", "NUDE") {
+	constructor (string memory baseURI, string memory creatorPassName) ERC721(creatorPassName, "NUDE") {
 		_baseTokenURI = baseURI;
 	}
 

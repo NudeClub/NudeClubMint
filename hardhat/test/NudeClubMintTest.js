@@ -15,7 +15,7 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
 
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha");
+    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha", "Nude Club Sarah Pass");
 
     // Only owner can start the mint 
     await hardhatContract.startMintFunc();
@@ -42,7 +42,7 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
 
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha");
+    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha", "Nude Club Sarah Pass");
 
     // Try and mint an NFT before the owner has started minting
     await expect (
@@ -64,7 +64,7 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
 
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha");
+    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha", "Nude Club Sarah Pass");
     
     await hardhatContract.connect(owner).startMintFunc();
     
@@ -81,7 +81,7 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
     
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha");
+    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha", "Nude Club Sarah Pass");
       
     // Try to start mint as non-owner 
     await expect (
@@ -114,7 +114,7 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
     
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha");
+    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha", "Nude Club Sarah Pass");
       
     // Start mint as owner 
     await hardhatContract.connect(owner).startMintFunc() 
@@ -142,7 +142,7 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
 
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha");
+    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha", "Nude Club Sarah Pass");
 
     // Only owner can start the mint 
     await hardhatContract.connect(owner).startMintFunc();
@@ -178,7 +178,7 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
 
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha");
+    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha", "Nude Club Sarah Pass");
 
     // Only owner can start the mint 
     await hardhatContract.connect(owner).startMintFunc();
