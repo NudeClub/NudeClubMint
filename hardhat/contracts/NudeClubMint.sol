@@ -7,6 +7,7 @@
 
 contract NudeClubMint is ERC721Enumerable, Ownable {
 
+	using Strings for uint256;
 
 	/**
 	* @dev _baseTokenURI for computing {tokenURI}. If set, the resulting URI for each
@@ -29,7 +30,7 @@ contract NudeClubMint is ERC721Enumerable, Ownable {
 	*     We can change <MODEL_NAME> here for each creator, later we can make a contract 
 	*	  factory for a more scalable solution
 	*/
-	constructor (string memory baseURI, string memory creatorPassName) ERC721(creatorPassName, "NUDE") {
+	constructor (string memory baseURI, string memory _CollectionName) ERC721(_CollectionName, "NUDE") {
 		_baseTokenURI = baseURI;
 	}
 
@@ -57,7 +58,7 @@ contract NudeClubMint is ERC721Enumerable, Ownable {
 
 		string memory baseURI = _baseURI();
 		// Attach tokenID so it can find the token stored on IPFS
-		return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(tokenId), ".json")) : "";
+		return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString(), ".json")) : "";
 	}
 
 	/**
