@@ -238,4 +238,27 @@ describe("Nude Club creator pass minting contract", function () {
 
 })
 
+it("Invalid tokenURI not found", async function() {
+
+  const [owner, addr1] = await ethers.getSigners();
+
+  const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
+
+  // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
+  const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
+
+  // Only owner can start the mint 
+  await hardhatContract.connect(owner).startMintFunc();
+
+  const tokenURI_1 = "ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/1.json"
+
+  await hardhatContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
+  await hardhatContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
+
+  await expect(
+    hardhatContract.tokenURI(0)
+    ).to.be.revertedWith("ERC721Metadata: URI query for nonexistent token");
+
+})
+
 });
