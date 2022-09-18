@@ -15,7 +15,7 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
 
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha", "Nude Club Sarah Pass");
+    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
 
     // Only owner can start the mint 
     await hardhatContract.startMintFunc();
@@ -42,7 +42,7 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
 
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha", "Nude Club Sarah Pass");
+    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
 
     // Try and mint an NFT before the owner has started minting
     await expect (
@@ -64,7 +64,7 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
 
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha", "Nude Club Sarah Pass");
+    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
     
     await hardhatContract.connect(owner).startMintFunc();
     
@@ -81,7 +81,7 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
     
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha", "Nude Club Sarah Pass");
+    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
       
     // Try to start mint as non-owner 
     await expect (
@@ -114,7 +114,7 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
     
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha", "Nude Club Sarah Pass");
+    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
       
     // Start mint as owner 
     await hardhatContract.connect(owner).startMintFunc() 
@@ -142,7 +142,7 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
 
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha", "Nude Club Sarah Pass");
+    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
 
     // Only owner can start the mint 
     await hardhatContract.connect(owner).startMintFunc();
@@ -178,7 +178,7 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
 
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha", "Nude Club Sarah Pass");
+    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
 
     // Only owner can start the mint 
     await hardhatContract.connect(owner).startMintFunc();
@@ -214,5 +214,28 @@ describe("Nude Club creator pass minting contract", function () {
     // ETH in owner wallet should now equal the ETH withdrawn minus the gas cost
     expect(await provider.getBalance(owner.address)).to.equal(ownerBalance.add(withdrawAmountMinusGastCost));
   });
+
+  it("tokenURI is set sucessfully", async function() {
+
+    const [owner, addr1] = await ethers.getSigners();
+
+    const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
+
+    // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
+    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
+
+    // Only owner can start the mint 
+    await hardhatContract.connect(owner).startMintFunc();
+
+    const tokenURI_1 = "ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/1.json"
+    const tokenURI_2 = "ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/2.json"
+
+    await hardhatContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
+    await hardhatContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
+
+    expect(await hardhatContract.tokenURI(1)).to.equal(tokenURI_1);
+    expect(await hardhatContract.tokenURI(2)).to.equal(tokenURI_2);
+
+})
 
 });
