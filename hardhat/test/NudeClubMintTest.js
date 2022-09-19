@@ -15,24 +15,56 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
 
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
+    const NudeClubMintContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
 
     // Only owner can start the mint 
-    await hardhatContract.startMintFunc();
+    await NudeClubMintContract.startMintFunc();
 
     // Confirm no passes minted yet
-    expect(await hardhatContract.tokenIds()).to.equal(0);
+    expect(await NudeClubMintContract.tokenIds()).to.equal(0);
 
     // Happy path - owner sucessfully mints 1 nude club pass for this collection
-    await hardhatContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
+    await NudeClubMintContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
 
     // Confirm one pass minted
-    expect(await hardhatContract.tokenIds()).to.equal(1);
+    expect(await NudeClubMintContract.tokenIds()).to.equal(1);
 
     // Check max number of passes is 1000
-    expect(await hardhatContract.maxTokenIds()).to.equal(1000);
+    expect(await NudeClubMintContract.maxTokenIds()).to.equal(1000);
 
   });
+
+
+  it("NFT amount correct on account", async function () {
+
+    const [owner, addr1] = await ethers.getSigners();
+
+    const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
+
+    // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
+    const NudeClubMintContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
+
+    // Only owner can start the mint 
+    await NudeClubMintContract.startMintFunc();
+
+    // Address one should not have any NFTs yet
+    expect(await NudeClubMintContract.balanceOf(addr1.address)).to.equal(0);
+
+    // Happy path - owner sucessfully mints 1 nude club pass for this collection
+    await NudeClubMintContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
+
+    // Check count
+    expect(await NudeClubMintContract.balanceOf(addr1.address)).to.equal(1);
+
+    // Mint another
+    await NudeClubMintContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
+
+    expect(await NudeClubMintContract.balanceOf(addr1.address)).to.equal(2);
+    
+    await NudeClubMintContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
+
+    expect(await NudeClubMintContract.balanceOf(addr1.address)).to.equal(3);
+  })
 
   it("User cannot mint NFT before mint started", async function () {
 
@@ -42,18 +74,18 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
 
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
+    const NudeClubMintContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
 
     // Try and mint an NFT before the owner has started minting
     await expect (
-        hardhatContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") })
+        NudeClubMintContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") })
         ).to.be.revertedWith("Mint not active");
 
     // Only owner can start the mint 
-    await hardhatContract.connect(owner).startMintFunc();
+    await NudeClubMintContract.connect(owner).startMintFunc();
 
     // Mint now occurs successfully
-    await hardhatContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
+    await NudeClubMintContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
 
   });
 
@@ -64,12 +96,12 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
 
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
+    const NudeClubMintContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
     
-    await hardhatContract.connect(owner).startMintFunc();
+    await NudeClubMintContract.connect(owner).startMintFunc();
     
     await expect (
-        hardhatContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.09") })
+        NudeClubMintContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.09") })
         ).to.be.revertedWith("Not enough eth sent");
 
   });
@@ -81,29 +113,29 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
     
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
+    const NudeClubMintContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
       
     // Try to start mint as non-owner 
     await expect (
-        hardhatContract.connect(addr1).startMintFunc() 
+        NudeClubMintContract.connect(addr1).startMintFunc() 
     ).to.be.revertedWith("Ownable: caller is not the owner");
 
     // Try and mint an NFT before the owner has started minting
     await expect (
-        hardhatContract.connect(owner).mintPass({ value: ethers.utils.parseEther("0.1") })
+        NudeClubMintContract.connect(owner).mintPass({ value: ethers.utils.parseEther("0.1") })
         ).to.be.revertedWith("Mint not active");
 
     // Confirm no passes minted yet
-    expect(await hardhatContract.tokenIds()).to.equal(0);
+    expect(await NudeClubMintContract.tokenIds()).to.equal(0);
 
     // Start mint as owner
-    hardhatContract.startMintFunc() 
+    NudeClubMintContract.startMintFunc() 
 
     // Happy path - owner sucessfully mints 1 nude club pass for this collection
-    await hardhatContract.connect(owner).mintPass({ value: ethers.utils.parseEther("0.1") });
+    await NudeClubMintContract.connect(owner).mintPass({ value: ethers.utils.parseEther("0.1") });
 
     // Confirm one pass minted
-    expect(await hardhatContract.tokenIds()).to.equal(1);
+    expect(await NudeClubMintContract.tokenIds()).to.equal(1);
 
   });
 
@@ -114,24 +146,24 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
     
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
+    const NudeClubMintContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
       
     // Start mint as owner 
-    await hardhatContract.connect(owner).startMintFunc() 
+    await NudeClubMintContract.connect(owner).startMintFunc() 
 
     // Try and mint an NFT 
-    await hardhatContract.connect(owner).mintPass({ value: ethers.utils.parseEther("0.1") });
+    await NudeClubMintContract.connect(owner).mintPass({ value: ethers.utils.parseEther("0.1") });
 
     // Confirm one NFT minted
-    expect(await hardhatContract.tokenIds()).to.equal(1);
+    expect(await NudeClubMintContract.tokenIds()).to.equal(1);
 
     // Try to withdraw eth not as owner 
     await expect (
-      hardhatContract.connect(addr1).withdraw() 
+      NudeClubMintContract.connect(addr1).withdraw() 
     ).to.be.revertedWith("Ownable: caller is not the owner");
 
     // Try to withdraw as owner (will throw fail if txn fails)
-    await hardhatContract.connect(owner).withdraw();
+    await NudeClubMintContract.connect(owner).withdraw();
 
   });
 
@@ -142,32 +174,32 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
 
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
+    const NudeClubMintContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
 
     // Only owner can start the mint 
-    await hardhatContract.connect(owner).startMintFunc();
+    await NudeClubMintContract.connect(owner).startMintFunc();
 
     // Check max number of passes is 1000
-    expect(await hardhatContract.maxTokenIds()).to.equal(1000);
+    expect(await NudeClubMintContract.maxTokenIds()).to.equal(1000);
 
     // Confirm no passes minted yet
-    expect(await hardhatContract.tokenIds()).to.equal(0);
+    expect(await NudeClubMintContract.tokenIds()).to.equal(0);
 
     // Loop through mint function 1000 times
     for (let i = 0; i < 1000; i++) {
-      await hardhatContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
+      await NudeClubMintContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
     }
 
     // Confirm 1000 passes minted
-    expect(await hardhatContract.tokenIds()).to.equal(1000);
+    expect(await NudeClubMintContract.tokenIds()).to.equal(1000);
 
     // Try to mint one more which should throw a fail
     await expect (
-      hardhatContract.connect(addr1).mintPass({value : ethers.utils.parseEther("0.1") })
+      NudeClubMintContract.connect(addr1).mintPass({value : ethers.utils.parseEther("0.1") })
     ).to.be.revertedWith("All passes minted");
 
     // Confirm still 1000 passes minted
-    expect(await hardhatContract.tokenIds()).to.equal(1000);
+    expect(await NudeClubMintContract.tokenIds()).to.equal(1000);
 
   });
 
@@ -178,13 +210,13 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
 
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
+    const NudeClubMintContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
 
     // Only owner can start the mint 
-    await hardhatContract.connect(owner).startMintFunc();
+    await NudeClubMintContract.connect(owner).startMintFunc();
 
     // Confirm no passes minted yet
-    expect(await hardhatContract.tokenIds()).to.equal(0);
+    expect(await NudeClubMintContract.tokenIds()).to.equal(0);
 
     // Get balance of owner
     const ownerBalance = ethers.BigNumber.from(await provider.getBalance(owner.address));
@@ -194,14 +226,14 @@ describe("Nude Club creator pass minting contract", function () {
 
     // Loop through mint function 100 times
     for (let i = 0; i < 100; i++) {
-      await hardhatContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
+      await NudeClubMintContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
     }
 
     // Confirm 100 passes minted
-    expect(await hardhatContract.tokenIds()).to.equal(100);
+    expect(await NudeClubMintContract.tokenIds()).to.equal(100);
 
     // Withdraw as owner and calculate gas cost
-    txResp = await hardhatContract.connect(owner).withdraw();
+    txResp = await NudeClubMintContract.connect(owner).withdraw();
     txReceipt = await txResp.wait();
     withdrawGas = ethers.BigNumber.from(txReceipt.gasUsed.mul(txReceipt.effectiveGasPrice));
 
@@ -222,19 +254,19 @@ describe("Nude Club creator pass minting contract", function () {
     const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
 
     // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-    const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
+    const NudeClubMintContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
 
     // Only owner can start the mint 
-    await hardhatContract.connect(owner).startMintFunc();
+    await NudeClubMintContract.connect(owner).startMintFunc();
 
     const tokenURI_1 = "ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/1.json"
     const tokenURI_2 = "ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/2.json"
 
-    await hardhatContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
-    await hardhatContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
+    await NudeClubMintContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
+    await NudeClubMintContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
 
-    expect(await hardhatContract.tokenURI(1)).to.equal(tokenURI_1);
-    expect(await hardhatContract.tokenURI(2)).to.equal(tokenURI_2);
+    expect(await NudeClubMintContract.tokenURI(1)).to.equal(tokenURI_1);
+    expect(await NudeClubMintContract.tokenURI(2)).to.equal(tokenURI_2);
 
 })
 
@@ -245,18 +277,18 @@ it("Invalid tokenURI not found", async function() {
   const NudeClubMint = await ethers.getContractFactory("NudeClubMint");
 
   // Deploy contract with dummy metadata (This will be the ipfs link for the collection)
-  const hardhatContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
+  const NudeClubMintContract = await NudeClubMint.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", "Nude Club Sarah Pass");
 
   // Only owner can start the mint 
-  await hardhatContract.connect(owner).startMintFunc();
+  await NudeClubMintContract.connect(owner).startMintFunc();
 
   const tokenURI_1 = "ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/1.json"
 
-  await hardhatContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
-  await hardhatContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
+  await NudeClubMintContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
+  await NudeClubMintContract.connect(addr1).mintPass({ value: ethers.utils.parseEther("0.1") });
 
   await expect(
-    hardhatContract.tokenURI(0)
+    NudeClubMintContract.tokenURI(0)
     ).to.be.revertedWith("ERC721Metadata: URI query for nonexistent token");
 
 })
