@@ -25,13 +25,16 @@ contract NudeClubMint is ERC721Enumerable, Ownable {
 	// Flag to start the mint 
 	bool startMint = false;
 
+	address multisigWallet;
+
 	/**
 	* * @dev ERC721 constructor takes in a `name` and a `symbol` to the token collection.
 	*     We can change <MODEL_NAME> here for each creator, later we can make a contract 
 	*	  factory for a more scalable solution
 	*/
-	constructor (string memory baseURI, string memory _CollectionName) ERC721(_CollectionName, "NUDE") {
+	constructor (string memory baseURI, string memory _CollectionName, address _multisigWallet) ERC721(_CollectionName, "NUDE") {
 		_baseTokenURI = baseURI;
+		multisigWallet = _multisigWallet;
 	}
 
 	/**
@@ -79,9 +82,8 @@ contract NudeClubMint is ERC721Enumerable, Ownable {
 	* 	   possible that we will not use this and send to multi sig wallet instead
 	*/
 	function withdraw() public onlyOwner {
-		address _owner = owner();
 		uint256 amount = address(this).balance;
-		(bool sent, ) =  _owner.call{value: amount}("");
+		(bool sent, ) =  multisigWallet.call{value: amount}("");
 		require(sent, "Failed to send Ether");
 	}
 

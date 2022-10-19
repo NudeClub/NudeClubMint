@@ -5,7 +5,7 @@ async function main() {
   const NudeClubMintContract = await ethers.getContractFactory("NudeClubMint");
 
   const deployedContract = await NudeClubMintContract.deploy("ipfs://QmSyrVNtDaXoEDEEBa6uuYVTFfPmWoLNGmgDhoU9KkPpha/", 
-            "Nude Club Creator Pass Test Mint2");
+            "Nude Club Creator Pass Goerli Test Mint");
 
   await deployedContract.deployed();
 
